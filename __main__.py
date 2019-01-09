@@ -5,6 +5,7 @@ from GoogleScraper import scrape_with_config, GoogleSearchError
 
 DEBUG = True
 SEARCHERS = ['yandex', 'bing', 'google', 'yahoo', 'duckduckgo']
+NUM_PAGES_FOR_KEYWORD = 3
 
 
 class Link(QObject):
@@ -16,9 +17,11 @@ class Link(QObject):
         self._name = name
         self._title = title
 
+
     @pyqtProperty('QString', notify=nameChanged)
     def name(self):
         return self._name
+
 
     @name.setter
     def name(self, name):
@@ -26,9 +29,11 @@ class Link(QObject):
             self._name = name
             self.nameChanged.emit()
 
+
     @pyqtProperty('QString', notify=titleChanged)
     def title(self):
         return self._title
+
 
     @title.setter
     def title(self, title):
@@ -44,15 +49,18 @@ class StoreLinks(QObject):
         super().__init__(*args, **kwargs)
         self._links = []
 
+
     @pyqtProperty(QQmlListProperty, notify=linksChanged)
     def links(self):
         return QQmlListProperty(Link, self, self._links)
+
 
     @links.setter
     def links(self, links):
         if links != self._links:
             self._links = links
             self.linksChanged.emit()
+
 
     def appendLink(self, link):
         self._links.append(link)
@@ -68,42 +76,46 @@ class WebSearcher(QObject):
                                yahoo=StoreLinks(), duckduckgo=StoreLinks())
         super().__init__()
 
+
     resultReceived = pyqtSignal(str, bool, arguments=['searchEngineName', 'isSuccessful'])
 
     @pyqtSlot(str)
     def searchTextByAllEngines(self, search_text):
 
-        for searcher in SEARCHERS:
-            config = {
-                'use_own_ip': True,
-                'keyword': search_text,
-                'search_engines': [searcher],
-                'num_pages_for_keyword': 1,
-                'scrape_method': 'http',
-                'do_caching': False
-            }
+        config = {
+            'proxy': 'socks5 localhost 9050',
+            'use_own_ip': True,
+            'keyword': search_text,
+            'search_engines': SEARCHERS,
+            'num_pages_for_keyword': NUM_PAGES_FOR_KEYWORD,
+            'scrape_method': 'http-async',
+            'do_caching': False
+        }
+        try:
+            self.search = scrape_with_config(config)
 
-            try:
-                self.search = scrape_with_config(config)
-
+            for searcher in SEARCHERS:
                 links = self.getURLsByEngine(searcher)
 
                 for url in links:
                     self._searchers[searcher].appendLink(Link(url, url))
 
                 self.resultReceived.emit(searcher, True)
-            except GoogleSearchError as e:
-                print(e)
+
+        except GoogleSearchError as e:
+            print(e)
+
 
     @pyqtSlot(str, str)
     def searchTextByEngine(self, search_text, engine_name):
 
         config = {
+            'proxy': 'socks5 localhost 9050',
             'use_own_ip': True,
             'keyword': search_text,
             'search_engines': [engine_name],
-            'num_pages_for_keyword': 1,
-            'scrape_method': 'http',
+            'num_pages_for_keyword': NUM_PAGES_FOR_KEYWORD,
+            'scrape_method': 'http-async',
             'do_caching': False
         }
 
@@ -118,27 +130,28 @@ class WebSearcher(QObject):
         except GoogleSearchError as e:
             print(e)
 
+
     @pyqtSlot(str)
     def getURLsByEngine(self, name):
 
+        result_links = []
+
         for serp in self.search.serps:
             if name == serp.search_engine_name:
-                if DEBUG:
-                    print(serp.search_engine_name)
-                    print(serp.page_number)
 
-                result_links = []
                 for lnk in serp.links:
                     if lnk.link:
                         result_links.append(lnk.link)
 
-                return result_links
+        return result_links
+
 
     yandexChanged = pyqtSignal()
     bingChanged = pyqtSignal()
     googleChanged = pyqtSignal()
     yahooChanged = pyqtSignal()
     duckduckgoChanged = pyqtSignal()
+
 
     @pyqtProperty(StoreLinks, notify=yandexChanged)
     def yandex(self):
