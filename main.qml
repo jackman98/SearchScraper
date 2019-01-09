@@ -17,46 +17,78 @@ ApplicationWindow {
 
         anchors.fill: parent
 
-        initialItem: RowLayout {
+        initialItem: ColumnLayout {
+            id: _mainPage
 
-            TextField {
-                id: _inputField
-
-                Layout.alignment: Qt.AlignCenter
-                placeholderText: qsTr("Введите поисковый запрос")
+            function changeSearcherStatus(name, status) {
+                var listSearchers = searchEngine.searchersNames;
+                if (status) {
+                    listSearchers.push(name);
+                }
+                else {
+                    for (var i = 0; i < listSearchers.length; i++) {
+                        if (listSearchers[i] === name) {
+                            listSearchers.splice(i, 1)
+                        }
+                    }
+                }
+                searchEngine.searchersNames = listSearchers;
             }
 
-            Button {
-
-                Layout.alignment: Qt.AlignCenter
-                text: qsTr("Поиск")
-
-                onClicked: {
-                    searchEngine.searchTextByAllEngines(_inputField.text)
-                    stackView.push(searchEngines);
+            CheckBox {
+                text: qsTr("Google")
+                onCheckedChanged: {
+                    _mainPage.changeSearcherStatus("google", checked);
                 }
             }
-        }
-    }
+            CheckBox {
+                text: qsTr("Baidu")
+                onCheckedChanged: {
+                    _mainPage.changeSearcherStatus("baidu", checked);
+                }
+            }
+            CheckBox {
+                text: qsTr("Bing")
+                onCheckedChanged: {
+                    _mainPage.changeSearcherStatus("bing", checked);
+                }
+            }
+            CheckBox {
+                text: qsTr("Yahoo")
+                onCheckedChanged: {
+                    _mainPage.changeSearcherStatus("yahoo", checked);
+                }
+            }
+            CheckBox {
+                text: qsTr("Duckduckgo")
+                onCheckedChanged: {
+                    _mainPage.changeSearcherStatus("duckduckgo", checked);
+                }
+            }
 
-    Connections {
-        target: searchEngine
+            RowLayout {
 
-        onResultReceived: {
-            switch(searchEngineName) {
-            case _google.objectName:
-                break;
-            case _yandex.objectName:
-                break;
-            case _bing.objectName:
+                Layout.alignment: Qt.AlignCenter
 
-                break;
-            case _yahoo.objectName:
+                TextField {
+                    id: _inputField
 
-                break;
-            case _duckduckgo.objectName:
+                    Layout.alignment: Qt.AlignCenter
+                    placeholderText: qsTr("Введите поисковый запрос")
+                }
 
-                break;
+                Button {
+
+                    Layout.alignment: Qt.AlignCenter
+                    text: qsTr("Поиск")
+
+                    enabled: _inputField.length
+
+                    onClicked: {
+                        searchEngine.searchTextByAllEngines(_inputField.text)
+                        stackView.push(searchEngines);
+                    }
+                }
             }
         }
     }
@@ -66,6 +98,13 @@ ApplicationWindow {
 
         visible: false
 
+        property var modelByName: {"google" : searchEngine.google.links,
+            "baidu" : searchEngine.baidu.links,
+            "bing" : searchEngine.bing.links,
+            "yahoo" : searchEngine.yahoo.links,
+            "duckduckgo" : searchEngine.duckduckgo.links
+        }
+
         SwipeView {
             id: swipeView
 
@@ -73,62 +112,23 @@ ApplicationWindow {
 
             currentIndex: bar.currentIndex
 
-            ListView {
-                id: _google
-                objectName: "google"
+            Repeater {
+                model: searchEngine.searchersNames
 
-                model: searchEngine.google.links
+                ListView {
 
-                delegate: Label {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: name
-                }
-            }
-            ListView {
-                id: _yandex
-                objectName: "yandex"
+                    model: searchEngines.modelByName[searchEngine.searchersNames[index]]
+                    visible: searchEngines.modelByName[searchEngine.searchersNames[index]]
 
-                model: searchEngine.yandex.links
-
-                delegate: Label {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: name
-                }
-            }
-            ListView {
-                id: _bing
-                objectName: "bing"
-
-                model: searchEngine.bing.links
-
-                delegate: Label {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: name
-                }
-            }
-            ListView {
-                id: _yahoo
-                objectName: "yahoo"
-
-                model: searchEngine.yahoo.links
-
-                delegate: Label {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: name
-                }
-            }
-            ListView {
-                id: _duckduckgo
-                objectName: "duckduckgo"
-
-                model: searchEngine.duckduckgo.links
-
-                delegate: Label {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: name
+                    delegate: Label {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: name
+                    }
                 }
             }
         }
+
+
 
         footer: TabBar {
             id: bar
@@ -137,20 +137,12 @@ ApplicationWindow {
             position: TabBar.Footer
             currentIndex: swipeView.currentIndex
 
-            TabButton {
-                text: qsTr("Google")
-            }
-            TabButton {
-                text: qsTr("Yandex")
-            }
-            TabButton {
-                text: qsTr("Bing")
-            }
-            TabButton {
-                text: qsTr("Yahoo")
-            }
-            TabButton {
-                text: qsTr("Duckduckgo")
+            Repeater {
+                model: searchEngine.searchersNames
+
+                TabButton {
+                    text: qsTr(searchEngine.searchersNames[index])
+                }
             }
         }
     }
