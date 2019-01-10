@@ -98,8 +98,16 @@ ApplicationWindow {
 
                                 validator: IntValidator{bottom: 1; top: 30;}
 
-                                // placeholderText: qsTr("Default: 3")
-                                text: "1"
+                                placeholderText: qsTr("Default: 3")
+                            }
+                        }
+                        Button {
+                            text: qsTr("Test search")
+                            onClicked: {
+                                searchEngine.searchersNames = ["google", "baidu", "bing", "yahoo", "duckduckgo"];
+                                searchEngine.numberPagesForKeyword = 1;
+                                searchEngine.searchTextByAllEngines("hello");
+                                stackView.push(searchEngines);
                             }
                         }
                     }
