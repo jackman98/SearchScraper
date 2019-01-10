@@ -190,7 +190,7 @@ ApplicationWindow {
 
                 anchors.fill: parent
                 currentIndex: bar.currentIndex
-searchersNames
+
                 Repeater {
                     model: searchEngine.searchersNames
 
