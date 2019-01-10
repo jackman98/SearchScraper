@@ -35,34 +35,73 @@ ApplicationWindow {
                 searchEngine.searchersNames = listSearchers;
             }
 
-            CheckBox {
-                text: qsTr("Google")
-                onCheckedChanged: {
-                    _mainPage.changeSearcherStatus("google", checked);
+            RowLayout {
+
+                Layout.alignment: Qt.AlignCenter
+
+                GroupBox {
+                    title: "Searchers"
+
+                    Column {
+                        spacing: 20
+
+                        CheckBox {
+                            text: qsTr("Google")
+                            onCheckedChanged: {
+                                _mainPage.changeSearcherStatus("google", checked);
+                            }
+                        }
+                        CheckBox {
+                            text: qsTr("Baidu")
+                            onCheckedChanged: {
+                                _mainPage.changeSearcherStatus("baidu", checked);
+                            }
+                        }
+                        CheckBox {
+                            text: qsTr("Bing")
+                            onCheckedChanged: {
+                                _mainPage.changeSearcherStatus("bing", checked);
+                            }
+                        }
+                        CheckBox {
+                            text: qsTr("Yahoo")
+                            onCheckedChanged: {
+                                _mainPage.changeSearcherStatus("yahoo", checked);
+                            }
+                        }
+                        CheckBox {
+                            text: qsTr("Duckduckgo")
+                            onCheckedChanged: {
+                                _mainPage.changeSearcherStatus("duckduckgo", checked);
+                            }
+                        }
+                    }
                 }
-            }
-            CheckBox {
-                text: qsTr("Baidu")
-                onCheckedChanged: {
-                    _mainPage.changeSearcherStatus("baidu", checked);
-                }
-            }
-            CheckBox {
-                text: qsTr("Bing")
-                onCheckedChanged: {
-                    _mainPage.changeSearcherStatus("bing", checked);
-                }
-            }
-            CheckBox {
-                text: qsTr("Yahoo")
-                onCheckedChanged: {
-                    _mainPage.changeSearcherStatus("yahoo", checked);
-                }
-            }
-            CheckBox {
-                text: qsTr("Duckduckgo")
-                onCheckedChanged: {
-                    _mainPage.changeSearcherStatus("duckduckgo", checked);
+
+                GroupBox {
+                    title: "Parameters"
+
+                    Column {
+                        spacing: 20
+
+                        RowLayout {
+                            Label {
+                                Layout.alignment: Qt.AlignCenter
+
+                                text: qsTr("Number pages for keyword")
+                                horizontalAlignment: Label.AlignHCenter
+                                verticalAlignment: Label.AlignVCenter
+                            }
+                            TextField {
+                                id: _numberPagesForKeyword
+                                Layout.alignment: Qt.AlignCenter
+
+                                validator: IntValidator{bottom: 1; top: 30;}
+
+                                placeholderText: qsTr("Default: 3")
+                            }
+                        }
+                    }
                 }
             }
 
@@ -74,18 +113,23 @@ ApplicationWindow {
                     id: _inputField
 
                     Layout.alignment: Qt.AlignCenter
-                    placeholderText: qsTr("Введите поисковый запрос")
+                    placeholderText: qsTr("Enter search request")
                 }
 
                 Button {
 
                     Layout.alignment: Qt.AlignCenter
-                    text: qsTr("Поиск")
+                    text: qsTr("Search")
 
                     enabled: _inputField.length
 
                     onClicked: {
-                        searchEngine.searchTextByAllEngines(_inputField.text)
+
+                        if (_numberPagesForKeyword.length > 0) {
+                            searchEngine.numberPagesForKeyword = _numberPagesForKeyword.text;
+                        }
+
+                        searchEngine.searchTextByAllEngines(_inputField.text);
                         stackView.push(searchEngines);
                     }
                 }

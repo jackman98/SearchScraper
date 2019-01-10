@@ -5,8 +5,6 @@ from GoogleScraper import scrape_with_config, GoogleSearchError
 
 DEBUG = True
 
-NUM_PAGES_FOR_KEYWORD = 3
-
 
 class Link(QObject):
     nameChanged = pyqtSignal()
@@ -65,6 +63,7 @@ class WebSearcher(QObject):
     def __init__(self):
         self.search = ""
 
+        self._numberPagesForKeyword = 3
         self._searchersNames = list()
         self._searchers = dict(baidu=StoreLinks(), bing=StoreLinks(), google=StoreLinks(),
                                yahoo=StoreLinks(), duckduckgo=StoreLinks())
@@ -78,7 +77,7 @@ class WebSearcher(QObject):
             'use_own_ip': True,
             'keyword': search_text,
             'search_engines': self._searchersNames,
-            'num_pages_for_keyword': NUM_PAGES_FOR_KEYWORD,
+            'num_pages_for_keyword': self._numberPagesForKeyword,
             'scrape_method': 'http-async',
             'do_caching': False
         }
@@ -102,7 +101,7 @@ class WebSearcher(QObject):
             'use_own_ip': True,
             'keyword': search_text,
             'search_engines': [engine_name],
-            'num_pages_for_keyword': NUM_PAGES_FOR_KEYWORD,
+            'num_pages_for_keyword': self._numberPagesForKeyword,
             'scrape_method': 'http-async',
             'do_caching': False
         }
@@ -168,6 +167,18 @@ class WebSearcher(QObject):
         if searchersNames != self._searchersNames:
             self._searchersNames = searchersNames
             self.searchersNamesChanged.emit()
+
+    numberPagesForKeywordChanged = pyqtSignal()
+
+    @pyqtProperty(int, notify=numberPagesForKeywordChanged)
+    def numberPagesForKeyword(self):
+        return self._numberPagesForKeyword
+
+    @numberPagesForKeyword.setter
+    def numberPagesForKeyword(self, numberPagesForKeyword):
+        if numberPagesForKeyword != self._numberPagesForKeyword:
+            self._numberPagesForKeyword = numberPagesForKeyword
+            self.numberPagesForKeywordChanged.emit()
 
 
 if __name__ == "__main__":
