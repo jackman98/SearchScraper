@@ -165,7 +165,7 @@ ApplicationWindow {
                         }
 
                         searchEngine.searchTextByAllEngines(_inputField.text);
-                        stackView.push(searchEngines);
+                        stackView.push(searchEnginesComponent);
                     }
                 }
             }
@@ -190,7 +190,7 @@ ApplicationWindow {
 
                 anchors.fill: parent
                 currentIndex: bar.currentIndex
-
+searchersNames
                 Repeater {
                     model: searchEngine.searchersNames
 
