@@ -2,3 +2,5 @@
 *.log
 *.qmlc
 *.db
+
+__pycache__

@@ -3,6 +3,8 @@ from PyQt5.QtQml import QQmlApplicationEngine, QQmlListProperty, qmlRegisterType
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, pyqtProperty
 from GoogleScraper import scrape_with_config, GoogleSearchError
 
+from borda_method import MetasearchResultsAggregator
+
 DEBUG = True
 
 
@@ -84,11 +86,16 @@ class WebSearcher(QObject):
         try:
             self.search = scrape_with_config(config)
 
+            engines_links = dict()
             for searcher in self._searchersNames:
                 links = self.getURLsByEngine(searcher)
+                engines_links[searcher] = links
 
                 for url in links:
                     self._searchers[searcher].appendLink(Link(url, url))
+
+            aggregator = MetasearchResultsAggregator(engines_links)
+            # TODO: aggregate all links
 
         except GoogleSearchError as e:
             print(e)
@@ -194,11 +201,6 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()
     # создаём объект SearchEngine
     searchEngine = WebSearcher()
-
-    # searchEngine.searchTextByEngine('Dima', 'bing')
-    # links = searchEngine.getURLsByEngine('bing')
-    #
-    # print(links)
 
     # и регистрируем его в контексте QML
     engine.rootContext().setContextProperty("searchEngine", searchEngine)
