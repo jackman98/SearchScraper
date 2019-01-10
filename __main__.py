@@ -97,6 +97,8 @@ class WebSearcher(QObject):
 
             aggregator = MetasearchResultsAggregator(engines_links)
             # TODO: aggregate all links
+            print(f"M = {aggregator.range_sequence_length}")
+            aggregator.get_ranked_link_list()
 
         except GoogleSearchError as e:
             print(e)

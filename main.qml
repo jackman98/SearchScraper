@@ -98,7 +98,8 @@ ApplicationWindow {
 
                                 validator: IntValidator{bottom: 1; top: 30;}
 
-                                placeholderText: qsTr("Default: 3")
+                                // placeholderText: qsTr("Default: 3")
+                                text: "1"
                             }
                         }
                     }
@@ -113,7 +114,8 @@ ApplicationWindow {
                     id: _inputField
 
                     Layout.alignment: Qt.AlignCenter
-                    placeholderText: qsTr("Enter search request")
+                    // placeholderText: qsTr("Enter search request")
+                    text: "hello"
                 }
 
                 Button {
