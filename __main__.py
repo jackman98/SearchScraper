@@ -65,6 +65,7 @@ class WebSearcher(QObject):
     def __init__(self):
         self.search = ""
 
+        self._isStaticMethod = False
         self._numberPagesForKeyword = 3
         self._searchersNames = list()
         self._searchers = dict(baidu=StoreLinks(), bing=StoreLinks(), google=StoreLinks(),
@@ -96,6 +97,7 @@ class WebSearcher(QObject):
                     self._searchers[searcher].appendLink(Link(url, url))
 
             aggregator = MetasearchResultsAggregator(engines_links)
+            aggregator._is_static_method = self._isStaticMethod
             # TODO: aggregate all links
             print(f"M = {aggregator.range_sequence_length}")
             aggregated_links_list = aggregator.get_ranked_link_list()
@@ -213,6 +215,18 @@ class WebSearcher(QObject):
         if numberPagesForKeyword != self._numberPagesForKeyword:
             self._numberPagesForKeyword = numberPagesForKeyword
             self.numberPagesForKeywordChanged.emit()
+
+    isStaticMethodChanged = pyqtSignal()
+
+    @pyqtProperty(bool, notify=isStaticMethodChanged)
+    def isStaticMethod(self):
+        return self._isStaticMethod
+
+    @isStaticMethod.setter
+    def isStaticMethod(self, isStaticMethod):
+        if isStaticMethod != self._isStaticMethod:
+            self._isStaticMethod = isStaticMethod
+            self.isStaticMethodChanged.emit()
 
 
 if __name__ == "__main__":

@@ -1,11 +1,11 @@
 from constants import SEARCH_ENGINE_EVALUATION
 
-IS_STATIC_METHOD = False
 
 class MetasearchResultsAggregator:
 
     def __init__(self, engines_links):
-        
+
+        self._is_static_method = False
         self._engines_links = engines_links
         self._searchers_count = len(engines_links)
         print (f"Searchers count = {self._searchers_count}")
@@ -73,7 +73,7 @@ class MetasearchResultsAggregator:
         
         print(f"Sum Hj = {finding_counter}")
 
-        if not IS_STATIC_METHOD:
+        if not self._is_static_method:
             # quality and amount
             p = finding_counter / (self._searchers_count * self.range_sequence_length)
             x1, x2 = 1 - p, p

@@ -10,7 +10,7 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("Search scraper")
 
     header: RowLayout {
         spacing: 20
@@ -129,6 +129,43 @@ ApplicationWindow {
                                 placeholderText: qsTr("Default: 3")
                             }
                         }
+                        ButtonGroup { id: radioGroup
+                            onClicked: {
+                                if (button.text === "Static") {
+                                    searchEngine.isStaticMethod = true;
+                                }
+                                else {
+                                    searchEngine.isStaticMethod = false;
+                                }
+                            }
+                        }
+
+                        Label {
+                            Layout.alignment: Qt.AlignCenter
+
+                            text: qsTr("Type of method:")
+                            horizontalAlignment: Label.AlignHCenter
+                            verticalAlignment: Label.AlignVCenter
+                        }
+
+                        RowLayout {
+                            Layout.alignment: Qt.AlignCenter
+
+                            RadioButton {
+                                Layout.alignment: Qt.AlignCenter
+
+                                checked: true
+                                text: qsTr("Quality")
+                                ButtonGroup.group: radioGroup
+                            }
+
+                            RadioButton {
+                                Layout.alignment: Qt.AlignCenter
+
+                                text: qsTr("Static")
+                                ButtonGroup.group: radioGroup
+                            }
+                        }
                         Button {
                             text: qsTr("Test search")
                             onClicked: {
@@ -212,6 +249,8 @@ ApplicationWindow {
 
                                 text: title
                                 elide: Label.ElideRight
+
+                                verticalAlignment: Label.AlignVCenter
                             }
 
                             Button {
@@ -242,6 +281,8 @@ ApplicationWindow {
 
                             text: title
                             elide: Label.ElideRight
+
+                            verticalAlignment: Label.AlignVCenter
                         }
 
                         Button {
