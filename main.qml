@@ -198,7 +198,7 @@ ApplicationWindow {
                     ListView {
 
                         model: searchEngines.modelByName[searchEngine.searchersNames[index]]
-                        visible: searchEngines.modelByName[searchEngine.searchersNames[index]]
+                        visible: model.length > 0
                         clip: true
 
                         delegate: RowLayout {
@@ -227,7 +227,9 @@ ApplicationWindow {
 
                 ListView {
 
-                    model: searchEngine.rangingList
+                    model: searchEngine.rangingList.links
+                    visible: model.length > 0
+                    clip: true
 
                     delegate: RowLayout {
 

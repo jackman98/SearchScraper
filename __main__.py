@@ -100,7 +100,8 @@ class WebSearcher(QObject):
             print(f"M = {aggregator.range_sequence_length}")
             aggregated_links_list = aggregator.get_ranked_link_list()
             print('Range result', aggregated_links_list)
-            
+
+            self._rangingList = StoreLinks()
             aggregated_links_list.sort(key=lambda x: x['rank'])
             for _, el in enumerate(aggregated_links_list):
                 link = el['link']
