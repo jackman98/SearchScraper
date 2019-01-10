@@ -85,4 +85,13 @@ class MetasearchResultsAggregator:
         
         print(f"Wi = {self.engine_wi}")
 
-        return []
+        self.ranked_link_list = []
+        for _, link in enumerate(self.all_unique_links):
+            summary_rank = 0
+            for _, engine in enumerate(self._engines_links):
+                if link in self.engines_ranked_dict[engine]:
+                    summary_rank += self.engines_ranked_dict[engine][link]
+            
+            self.ranked_link_list.append(dict({"link": link, "rank": summary_rank}))
+
+        return self.ranked_link_list
