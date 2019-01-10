@@ -12,6 +12,33 @@ ApplicationWindow {
     height: 480
     title: qsTr("Hello World")
 
+    header: RowLayout {
+        spacing: 20
+
+        ToolButton {
+            icon.name: "back"
+            enabled: stackView.depth > 1
+            onClicked: {
+                if (stackView.depth > 1) {
+                    stackView.pop();
+                }
+            }
+        }
+
+        Label {
+            id: titleLabel
+
+            Layout.alignment: Qt.AlignCenter
+            Layout.fillWidth: true
+
+            text: qsTr("Search scraper")
+            font.pixelSize: 20
+            elide: Label.ElideRight
+            horizontalAlignment: Qt.AlignHCenter
+            verticalAlignment: Qt.AlignVCenter
+        }
+    }
+
     StackView {
         id: stackView
 
@@ -107,7 +134,7 @@ ApplicationWindow {
                                 searchEngine.searchersNames = ["google", "baidu", "bing", "yahoo", "duckduckgo"];
                                 searchEngine.numberPagesForKeyword = 1;
                                 searchEngine.searchTextByAllEngines("hello");
-                                stackView.push(searchEngines);
+                                stackView.push(searchEnginesComponent);
                             }
                         }
                     }
@@ -122,8 +149,7 @@ ApplicationWindow {
                     id: _inputField
 
                     Layout.alignment: Qt.AlignCenter
-                    // placeholderText: qsTr("Enter search request")
-                    text: "hello"
+                    placeholderText: qsTr("Enter search request")
                 }
 
                 Button {
@@ -134,7 +160,6 @@ ApplicationWindow {
                     enabled: _inputField.length
 
                     onClicked: {
-
                         if (_numberPagesForKeyword.length > 0) {
                             searchEngine.numberPagesForKeyword = _numberPagesForKeyword.text;
                         }
@@ -147,32 +172,61 @@ ApplicationWindow {
         }
     }
 
-    Page {
-        id: searchEngines
+    Component {
+        id: searchEnginesComponent
 
-        visible: false
+        Page {
+            id: searchEngines
 
-        property var modelByName: {"google" : searchEngine.google.links,
-            "baidu" : searchEngine.baidu.links,
-            "bing" : searchEngine.bing.links,
-            "yahoo" : searchEngine.yahoo.links,
-            "duckduckgo" : searchEngine.duckduckgo.links
-        }
+            property var modelByName: {"google" : searchEngine.google.links,
+                "baidu" : searchEngine.baidu.links,
+                "bing" : searchEngine.bing.links,
+                "yahoo" : searchEngine.yahoo.links,
+                "duckduckgo" : searchEngine.duckduckgo.links
+            }
 
-        SwipeView {
-            id: swipeView
+            SwipeView {
+                id: swipeView
 
-            anchors.fill: parent
+                anchors.fill: parent
+                currentIndex: bar.currentIndex
 
-            currentIndex: bar.currentIndex
+                Repeater {
+                    model: searchEngine.searchersNames
 
-            Repeater {
-                model: searchEngine.searchersNames
+                    ListView {
+
+                        model: searchEngines.modelByName[searchEngine.searchersNames[index]]
+                        visible: searchEngines.modelByName[searchEngine.searchersNames[index]]
+                        clip: true
+
+                        delegate: RowLayout {
+
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            Label {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+
+                                text: title
+                                elide: Label.ElideRight
+                            }
+
+                            Button {
+                                text: qsTr("GO")
+
+                                onClicked: {
+                                    Qt.openUrlExternally(name);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 ListView {
 
-                    model: searchEngines.modelByName[searchEngine.searchersNames[index]]
-                    visible: searchEngines.modelByName[searchEngine.searchersNames[index]]
+                    model: searchEngine.rangingList
 
                     delegate: RowLayout {
 
@@ -196,55 +250,29 @@ ApplicationWindow {
                         }
                     }
                 }
-            }
 
-            ListView {
-
-                model: searchEngines.rangingList
-
-                delegate: RowLayout {
-
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-
-                    Label {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-
-                        text: title
-                        elide: Label.ElideRight
-                    }
-
-                    Button {
-                        text: qsTr("GO")
-
-                        onClicked: {
-                            Qt.openUrlExternally(name);
-                        }
-                    }
+                Component.onCompleted: {
+                    setCurrentIndex(0);
                 }
             }
-        }
 
+            footer: TabBar {
+                id: bar
 
+                position: TabBar.Footer
+                currentIndex: swipeView.currentIndex
 
-        footer: TabBar {
-            id: bar
+                Repeater {
+                    model: searchEngine.searchersNames
 
-            width: parent.width
-            position: TabBar.Footer
-            currentIndex: swipeView.currentIndex
-
-            Repeater {
-                model: searchEngine.searchersNames
+                    TabButton {
+                        text: qsTr(searchEngine.searchersNames[index])
+                    }
+                }
 
                 TabButton {
-                    text: qsTr(searchEngine.searchersNames[index])
+                    text: qsTr("Ranging list")
                 }
-            }
-
-            TabButton {
-                text: qsTr("Ranging list")
             }
         }
     }
