@@ -14,13 +14,13 @@ class MetasearchResultsAggregator:
 
         # TODO confirm mi 
         self.unique_link_counts = dict()
-        engines_ranked_dict = dict()
+        self.engines_ranked_dict = dict()
         for _, engine in enumerate(self._engines_links):
             engine_links = self._engines_links[engine]
             self.unique_link_counts[engine] = len(engine_links)
 
             engine_ranked_list = dict(zip(self._engines_links[engine], range(len(engine_links))))
-            engines_ranked_dict[engine] = engine_ranked_list
+            self.engines_ranked_dict[engine] = engine_ranked_list
 
             self.all_unique_links.update(engine_links)
             self.all_links_count += len(engine_links)
@@ -39,11 +39,50 @@ class MetasearchResultsAggregator:
             engine_links_set = set(self._engines_links[engine])
             difference_links = self.all_unique_links - engine_links_set
             for link in difference_links:
-                engines_ranked_dict[engine][link] = new_rank
+                self.engines_ranked_dict[engine][link] = new_rank
 
-        print(engines_ranked_dict)
+        print(self.engines_ranked_dict)
 
 
     def get_ranked_link_list(self):
         # TODO: will implemented later
+        
+        self.engine_vi = dict()
+        self.engine_oi = dict()
+        for _, engine in enumerate(self._engines_links):
+            self.engine_vi[engine] = self.unique_link_counts[engine] / self.all_links_count
+            self.engine_oi[engine] = self.unique_link_counts[engine] / self.range_sequence_length
+
+        print('Vi', self.engine_vi)
+        print('Oi', self.engine_oi)
+
+        finding_counter = 0
+        for _, link in enumerate(self.all_unique_links):
+            for _, engine in enumerate(self._engines_links):
+                if link in self._engines_links[engine]:
+                    finding_counter += 1
+        
+        print(f"Sum Hj = {finding_counter}")
+
+        p = finding_counter / (self._searchers_count * self.range_sequence_length)
+        
+        x1, x2 = 1 - p, p
+
+        print(f"x1 = {x1}, x2 = {x2}")
+
+        self.engine_wi_abnormal = dict()
+        sum_wi = 0
+        for _, engine in enumerate(self._engines_links):
+            ei = SEARCH_ENGINE_EVALUATION[engine]
+            oi = self.engine_oi[engine]
+            vi = self.engine_vi[engine]
+            self.engine_wi_abnormal[engine] = ei * (x1 * oi + x2 * vi)
+            sum_wi += self.engine_wi_abnormal[engine]
+
+        self.engine_wi = dict()
+        for _, engine in enumerate(self._engines_links):
+            self.engine_wi[engine] = self.engine_wi_abnormal[engine] / sum_wi
+        
+        print(f"Wi = {self.engine_wi}")
+
         return []
