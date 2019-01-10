@@ -1,5 +1,7 @@
 from constants import SEARCH_ENGINE_EVALUATION
 
+IS_STATIC_METHOD = False
+
 class MetasearchResultsAggregator:
 
     def __init__(self, engines_links):
@@ -71,9 +73,28 @@ class MetasearchResultsAggregator:
         
         print(f"Sum Hj = {finding_counter}")
 
-        p = finding_counter / (self._searchers_count * self.range_sequence_length)
-        
-        x1, x2 = 1 - p, p
+        if not IS_STATIC_METHOD:
+            # quality and amount
+            p = finding_counter / (self._searchers_count * self.range_sequence_length)
+            x1, x2 = 1 - p, p
+
+        else:
+            mv = 0
+            for _, engine in enumerate(self._engines_links):
+                mv += self.engine_vi[engine]
+            mv /= self._searchers_count
+
+            mv2 = 0
+            for _, engine in enumerate(self._engines_links):
+                mv2 += self.engine_vi[engine] ** 2
+            mv2 /= self._searchers_count
+
+            d_v = mv2 - mv ** 2
+
+            x1, x2 = d_v, 1 - d_v
+
+
+        # TODO carry to function
 
         print(f"x1 = {x1}, x2 = {x2}")
 
@@ -97,7 +118,8 @@ class MetasearchResultsAggregator:
             summary_rank = 0
             for _, engine in enumerate(self._engines_links):
                 if link in self.engines_ranked_dict[engine]:
-                    summary_rank += self.engines_ranked_dict[engine][link]
+                    weight_rank = self.engines_ranked_dict[engine][link]
+                    summary_rank += weight_rank * self.engine_wi[engine]
             
             self.ranked_link_list.append(dict({"link": link, "rank": summary_rank}))
 
