@@ -69,6 +69,7 @@ class WebSearcher(QObject):
         self._searchersNames = list()
         self._searchers = dict(baidu=StoreLinks(), bing=StoreLinks(), google=StoreLinks(),
                                yahoo=StoreLinks(), duckduckgo=StoreLinks())
+        self._rangingList = StoreLinks()
         super().__init__()
 
     @pyqtSlot(str)
@@ -142,6 +143,7 @@ class WebSearcher(QObject):
     googleChanged = pyqtSignal()
     yahooChanged = pyqtSignal()
     duckduckgoChanged = pyqtSignal()
+    rangingListChanged = pyqtSignal()
 
     @pyqtProperty(StoreLinks, notify=baiduChanged)
     def baidu(self):
@@ -162,6 +164,10 @@ class WebSearcher(QObject):
     @pyqtProperty(StoreLinks, notify=duckduckgoChanged)
     def duckduckgo(self):
         return self._searchers["duckduckgo"]
+
+    @pyqtProperty(StoreLinks, notify=rangingListChanged)
+    def rangingList(self):
+        return self._rangingList
 
     searchersNamesChanged = pyqtSignal()
 

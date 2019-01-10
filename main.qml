@@ -187,6 +187,33 @@ ApplicationWindow {
                     }
                 }
             }
+
+            ListView {
+
+                model: searchEngines.rangingList
+
+                delegate: RowLayout {
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    Label {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+
+                        text: title
+                        elide: Label.ElideRight
+                    }
+
+                    Button {
+                        text: qsTr("GO")
+
+                        onClicked: {
+                            Qt.openUrlExternally(name);
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -204,6 +231,10 @@ ApplicationWindow {
                 TabButton {
                     text: qsTr(searchEngine.searchersNames[index])
                 }
+            }
+
+            TabButton {
+                text: qsTr("Ranging list")
             }
         }
     }
