@@ -120,9 +120,26 @@ ApplicationWindow {
                     model: searchEngines.modelByName[searchEngine.searchersNames[index]]
                     visible: searchEngines.modelByName[searchEngine.searchersNames[index]]
 
-                    delegate: Label {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: name
+                    delegate: RowLayout {
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        Label {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+
+                            text: title
+                            elide: Label.ElideRight
+                        }
+
+                        Button {
+                            text: qsTr("GO")
+
+                            onClicked: {
+                                Qt.openUrlExternally(name);
+                            }
+                        }
                     }
                 }
             }
