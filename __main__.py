@@ -91,7 +91,7 @@ class WebSearcher(QObject):
             for searcher in self._searchersNames:
                 links = self.getURLsByEngine(searcher)
                 engines_links[searcher] = links
-
+                self._searchers[searcher] = StoreLinks()
                 for url in links:
                     self._searchers[searcher].appendLink(Link(url, url))
 
@@ -121,6 +121,8 @@ class WebSearcher(QObject):
         try:
             self.search = scrape_with_config(config)
             links = self.getURLsByEngine(engine_name)
+
+            self._searchers[engine_name] = StoreLinks()
 
             for url in links:
                 self._searchers[engine_name].appendLink(Link(url, url))
