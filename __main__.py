@@ -144,8 +144,17 @@ class WebSearcher(QObject):
             if name == serp.search_engine_name:
 
                 for lnk in serp.links:
-                    if lnk.link:
-                        result_links.append(lnk.link)
+                    link = lnk.link
+                    if link:
+                        if name == "duckduckgo": 
+                            link = link.replace("%2F", "/")
+                            link = link.replace("%3A", ":")
+                            link = link.replace("%3F", "?")
+                            link = link.replace("%3D", "=")
+                            link = link.replace("%2D", "-")
+                            link = link.replace("/l/?kh=-1&uddg=", "")
+
+                        result_links.append(link)
 
         return result_links
 
