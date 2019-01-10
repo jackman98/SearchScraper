@@ -50,8 +50,15 @@ class MetasearchResultsAggregator:
         self.engine_vi = dict()
         self.engine_oi = dict()
         for _, engine in enumerate(self._engines_links):
-            self.engine_vi[engine] = self.unique_link_counts[engine] / self.all_links_count
-            self.engine_oi[engine] = self.unique_link_counts[engine] / self.range_sequence_length
+            if self.all_links_count != 0:
+                self.engine_vi[engine] = self.unique_link_counts[engine] / self.all_links_count
+            else:
+                self.engine_vi[engine] = 0
+
+            if self.range_sequence_length != 0:
+                self.engine_oi[engine] = self.unique_link_counts[engine] / self.range_sequence_length
+            else:
+                self.engine_oi[engine] = 0
 
         print('Vi', self.engine_vi)
         print('Oi', self.engine_oi)
