@@ -101,6 +101,11 @@ class WebSearcher(QObject):
             aggregated_links_list = aggregator.get_ranked_link_list()
             print('Range result', aggregated_links_list)
             
+            aggregated_links_list.sort(key=lambda x: x['rank'])
+            for _, el in enumerate(aggregated_links_list):
+                link = el['link']
+                self._rangingList.appendLink(Link(link, link))
+                print(el)
 
         except GoogleSearchError as e:
             print(e)
