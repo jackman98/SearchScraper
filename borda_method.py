@@ -75,7 +75,11 @@ class MetasearchResultsAggregator:
 
         if not self._is_static_method:
             # quality and amount
-            p = finding_counter / (self._searchers_count * self.range_sequence_length)
+            if self._searchers_count and self.range_sequence_length:
+                p = finding_counter / (self._searchers_count * self.range_sequence_length)
+            else:
+                p = 0
+                
             x1, x2 = 1 - p, p
 
         else:
