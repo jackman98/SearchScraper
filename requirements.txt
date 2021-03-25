@@ -14,7 +14,7 @@ multidict==4.5.2
 PyMySQL==0.9.3
 PyQt5==5.11.3
 PyQt5-sip==4.19.13
-PyYAML==3.12
+PyYAML==5.4
 requests==2.21.0
 selenium==3.141.0
 SQLAlchemy==1.2.15
